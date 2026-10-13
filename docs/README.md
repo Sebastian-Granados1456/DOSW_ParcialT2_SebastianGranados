@@ -3,6 +3,15 @@
 - a. El barbero debe existir es una regla de negocio ya que no depende del ADMIN que exista para validar si se crea el turno o no, eso quiere decir que es una validación de negocio, algo que no se verifica al crear el post de turno por parte del admin. Para una validación de entrada El turno nace DISPONIBLE es un buen ejemplo ya que no debe conocer al sistema completo ni interactuar con el para que el turno al crearse este en DISPONIBLE.
 - b. La API debe detener el proceso y debe retornar el motivo específico, se debe informar un error conforme lo que pase con el cliente.
 
+## Punto 2
+- a. El problema que aparece es que no se respentan las responsabilidades de las clases y pueden ocurrir errores de seguridad ya que por ejemplo un controlador nunca deberia saber que es una BD.Por ejemplo en reservas: el usuario interactua con la app en controlador, luego el mapper in recibe esa info y la lleva a service, ahi en service se valida si todo esta bien, si es asi se va a mapper out que este se entiende con la BD y guarda dicha reserva.
+- b. Un validador valida alguna regla o caso de uso, un ejemplo es la regla de que debe pasar 5 validaciones. Una utilidad es aquella que puede reutilizarce, ejemplo como la estructura del turno. El servicio es lo que esta detras de la interfaz del usuario, un ejemplo es el servicio de ver mis reservas.
+- c. El Mapper In es el encargado de llevar los datos que reciba en controller hacia el service. El mapper Out recibe de service los datos y los trasnforma para darselos a repository y luego ponerlos en la BD
+- d. Las 3 reglas deben pasar por el validator luego de haber cruzado el controlador - MapperIn - Service. Si alguna no se cumple no pasa y arroja un error http con su mensaje.
+
+## Punto 3
+- Ventaja: Todo esta compacto y respeta las responsabilidades
+- Desventaja: Es posible acceder a información importante por medio de otras clases.
 
 ## Punto 4
 ### Asignación del Equipo de Seguridad - Proteger el acceso y la información
@@ -17,4 +26,3 @@ b. Dos posibles riesgos según OWASP TOP 10 son los siguientes:
  - Broken Access Control: Puede ser posible que haya usuarios como Clientes puedan acceder a recursos solo para Admin, se mitiga directamente con la autenticación por token, algo presente en JWT, así verificamos que la autenticación para cada usuario tiene el token correspondiente con los permisos de su tipo.
 
 c. Para la autenticación el más adecuado para garantizar seguridad es el de JWT o JSON Web Token en autenticación es el más adecuado ya que se tienen dos tipos de usuario con permisos diferentes, Cliente y Admin, cuando se tienen varios tipos de usuario es necesario darle diferentes permisos y es el token el que otorga y hace posible esto. Así se garantiza seguridad de manera sencilla.
-

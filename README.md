@@ -18,6 +18,8 @@
 - **Grupo:** 1
 - **Profesor agregado al repositorio:** ✔
 
+![Profesor como colaborador](docs/images/colaborador.png)
+
 ## 2. Descripción del proyecto
 Servicio REST base del parcial práctico del segundo tercio de DOSW. Está construido con Spring Boot siguiendo una arquitectura MVC por capas (controller, core, persistence) y usa MongoDB como base de datos. Por ahora expone un endpoint de salud y la documentación Swagger; la lógica del parcial se implementa en el laboratorio.
 
@@ -27,6 +29,9 @@ Servicio REST base del parcial práctico del segundo tercio de DOSW. Está const
 | Servicio | `https://dosw-parcial-sebastiangranados-fqded5cvd9awgab7.northcentralus-01.azurewebsites.net` |
 | Health | `https://dosw-parcial-sebastiangranados-fqded5cvd9awgab7.northcentralus-01.azurewebsites.net/api/v1/health` |
 | Swagger | `https://dosw-parcial-sebastiangranados-fqded5cvd9awgab7.northcentralus-01.azurewebsites.net/swagger-ui/index.html` |
+
+![Health en Azure](docs/images/azure-health.png)
+![Swagger en Azure](docs/images/azure-swagger.png)
 
 ## 4. Estructura del proyecto
 ```
@@ -120,5 +125,10 @@ Secrets usados: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `AZURE_CREDENTIALS`, `A
 ![Pipeline en verde](docs/images/pipeline.png)
 
 ## 11. Herramientas de modelado y diseño (evidencias)
-![Cuenta herramienta de modelado](docs/images/modelado.png)
+**Miro**
+
+![Cuenta Miro](docs/images/modelado.png)
+
+**Figma**
+
 ![Cuenta Figma](docs/images/figma.png)

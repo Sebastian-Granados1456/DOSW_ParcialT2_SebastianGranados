@@ -8,3 +8,7 @@
 - b. Un validador valida alguna regla o caso de uso, un ejemplo es la regla de que debe pasar 5 validaciones. Una utilidad es aquella que puede reutilizarce, ejemplo como la estructura del turno. El servicio es lo que esta detras de la interfaz del usuario, un ejemplo es el servicio de ver mis reservas.
 - c. El Mapper In es el encargado de llevar los datos que reciba en controller hacia el service. El mapper Out recibe de service los datos y los trasnforma para darselos a repository y luego ponerlos en la BD
 - d. Las 3 reglas deben pasar por el validator luego de haber cruzado el controlador - MapperIn - Service. Si alguna no se cumple no pasa y arroja un error http con su mensaje.
+
+## Punto 3
+- Ventaja: Todo esta compacto y respeta las responsabilidades
+- Desventaja: Es posible acceder a información importante por medio de otras clases.

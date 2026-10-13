@@ -31,3 +31,6 @@ c. Para la autenticación el más adecuado para garantizar seguridad es el de JW
 ### Asignación del Equipo de Calidad - Definir cómo comprobar el comportamiento.
 
 - Cada vez que se crea un nuevo objeto como clase con atributos, se debe crear un test por método que primero falle (RED), se implemente directamente el funcionamiento básico (GREEN), y por último se refactorice para funcionar en casos generales (REFACTOR). En este caso si un Cliente pide un turno es necesario verificar que genere un id, que pueda cambiar el estado a realizado
+
+## Punto 6
+### Por realizar

@@ -26,3 +26,8 @@ b. Dos posibles riesgos según OWASP TOP 10 son los siguientes:
  - Broken Access Control: Puede ser posible que haya usuarios como Clientes puedan acceder a recursos solo para Admin, se mitiga directamente con la autenticación por token, algo presente en JWT, así verificamos que la autenticación para cada usuario tiene el token correspondiente con los permisos de su tipo.
 
 c. Para la autenticación el más adecuado para garantizar seguridad es el de JWT o JSON Web Token en autenticación es el más adecuado ya que se tienen dos tipos de usuario con permisos diferentes, Cliente y Admin, cuando se tienen varios tipos de usuario es necesario darle diferentes permisos y es el token el que otorga y hace posible esto. Así se garantiza seguridad de manera sencilla.
+
+## Punto 5
+### Asignación del Equipo de Calidad - Definir cómo comprobar el comportamiento.
+
+- Cada vez que se crea un nuevo objeto como clase con atributos, se debe crear un test por método que primero falle (RED), se implemente directamente el funcionamiento básico (GREEN), y por último se refactorice para funcionar en casos generales (REFACTOR). En este caso si un Cliente pide un turno es necesario verificar que genere un id, que pueda cambiar el estado a realizado

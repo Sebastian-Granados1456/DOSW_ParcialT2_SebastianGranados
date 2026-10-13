@@ -1,10 +1,10 @@
 ## Punto 1
 ### [Asignación el Equipo de Producto - Definición del contrato de la API.xlsx](Asignaci%F3n%20el%20Equipo%20de%20Producto%20-%20Definici%F3n%20del%20contrato%20de%20la%20API.xlsx)
-- a. El barbero debe existir es una regla de negocio ya que no depende del ADMIN que exista para validar si se crea el turno o no, eso quiere decir que es una validación de negocio, algo que no se verifica al crear el post de turno por parte del admin. Para una validación de entrada El turno nace DISPONIBLE es un buen ejemplo ya que no debe conocer al sistema completo ni interactuar con el para que el turno al crearse este en DISPONIBLE.
+- a. El barbero debe existir es una regla de negocio ya que no depende del ADMIN que exista para validar si se crea el turno o no, eso quiere decir que es una validación de negocio, algo que no se verifica al crear el post de turno por parte del admin. Para una validación de entrada El turno nace DISPONIBLE es un buen ejemplo ya que no debe conocer al sistema completo ni interactuar con el para que el turno al crearse este en DISPONIBLE. Fecha debe ser futura y debe estar en un dia de disponibilidad del barbero, es una regla de negocio ya que debe consultar las bases.
 - b. La API debe detener el proceso y debe retornar el motivo específico, se debe informar un error conforme lo que pase con el cliente.
 
 ## Punto 2
 - a. El problema que aparece es que no se respentan las responsabilidades de las clases y pueden ocurrir errores de seguridad ya que por ejemplo un controlador nunca deberia saber que es una BD.Por ejemplo en reservas: el usuario interactua con la app en controlador, luego el mapper in recibe esa info y la lleva a service, ahi en service se valida si todo esta bien, si es asi se va a mapper out que este se entiende con la BD y guarda dicha reserva.
 - b. Un validador valida alguna regla o caso de uso, un ejemplo es la regla de que debe pasar 5 validaciones. Una utilidad es aquella que puede reutilizarce, ejemplo como la estructura del turno. El servicio es lo que esta detras de la interfaz del usuario, un ejemplo es el servicio de ver mis reservas.
 - c. El Mapper In es el encargado de llevar los datos que reciba en controller hacia el service. El mapper Out recibe de service los datos y los trasnforma para darselos a repository y luego ponerlos en la BD
-- d.
+- d. Las 3 reglas deben pasar por el validator luego de haber cruzado el controlador - MapperIn - Service. Si alguna no se cumple no pasa y arroja un error http con su mensaje.

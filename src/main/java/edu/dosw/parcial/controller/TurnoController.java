@@ -6,6 +6,7 @@ import edu.dosw.parcial.controller.mappers.TurnoMapperIn;
 import edu.dosw.parcial.controller.mappers.TurnoMapperOut;
 import edu.dosw.parcial.core.models.Turno;
 import edu.dosw.parcial.core.services.TurnoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Turnos")
 @RestController
 @RequestMapping("/api/v1/turnos")
 public class TurnoController {

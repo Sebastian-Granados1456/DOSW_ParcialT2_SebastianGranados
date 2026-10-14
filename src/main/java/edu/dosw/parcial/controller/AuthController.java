@@ -3,7 +3,7 @@ package edu.dosw.parcial.controller;
 import edu.dosw.parcial.controller.dtos.request.LoginRequestDTO;
 import edu.dosw.parcial.controller.dtos.response.TokenResponseDTO;
 import edu.dosw.parcial.core.services.security.JwtUtil;
-
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Auth")
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {

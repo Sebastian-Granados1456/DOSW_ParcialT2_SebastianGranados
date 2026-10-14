@@ -1,7 +1,8 @@
 # DOSW_ParcialT2_SebastianGranados
 
 ## Realización Parcial
-### Parte I - Teorica
+### Enunciado Rojo: Bob's Barber — Parte Teórica
+**Estudiantes:** Sebastián Camilo Granados López - Juan David Munar Chaparro
 - El README correspondiente con todas las respuestas: [Readme Teorico](docs/README.md)
 
 

@@ -1,4 +1,5 @@
 ## Punto 1
+### Asignación del equipo de Producto 
 ### [Asignación el Equipo de Producto - Definición del contrato de la API.xlsx](Asignaci%F3n%20el%20Equipo%20de%20Producto%20-%20Definici%F3n%20del%20contrato%20de%20la%20API.xlsx)
 - a. Para una validación de entrada por ejemplo se revisa la completitud de los datos, una de negocio puede ser por ejemplo que el barbero exista, otra de negocio es que se tenga 10 digitos en un número telefónico, que no haya más reservas en la misma hora también cumple como de negocio.
 - b. La API se detiene en la primer validación que falla, solo respondiendo con error con el código y su mensaje, si falla no se crea la reserva, nos e asigna barbero ni mucho menos se cambia a OCUPADO. 
@@ -6,10 +7,19 @@
 ---
 
 ## Punto 2
+### Asignación del equipo de Arquitectura 
 ### Diagramas:
-1. Componentes general: [Diagrama](images/CompGen.png)
-2. Componentes específico: [Diagrama](images/CompEspecifico.png)
-3. Diagrama de clases: [Diagrama](images/DiagramaClases.png)
+1. Componentes general: 
+
+![Diagrama](images/CompGen.png)
+
+2. Componentes específico: 
+
+![Diagrama](images/CompEspecifico.png)
+
+3. Diagrama de clases: 
+
+![Diagrama](images/DiagramaClases.png)
 
 - a. El problema que aparece es que se genera acoplamiento, no se respetan las responsabilidades de las clases y pueden ocurrir errores de seguridad, ya que un controlador nunca debería saber qué es una BD ni manejar persistencia. Por ejemplo en reservas: el usuario interactúa con la API en el Controller, luego el Mapper IN recibe esa info y la pasa a modelo de dominio hacia el Service, ahí en Service se valida si todo está bien, y si es así pasa al Mapper OUT, que se entiende con el Repository para guardar dicha reserva en la BD.
 - b. Un validador verifica que se cumpla alguna regla de negocio o entrada, un ejemplo es ValidadorReserva con la regla de pasar las 4 validaciones en cadena. Una utilidad es una clase de apoyo sin estado que puede reutilizarse en varias partes, ejemplo una clase de horarios para validar formatos de fechas y horas de los turnos. El servicio contiene la lógica de negocio detrás del controlador, un ejemplo es el servicio de crear reserva o el de ver mis reservas.
@@ -23,8 +33,9 @@
 ---
 
 ## Punto 3
+### Asignación del Equipo de Base de datos 
 ### Diagrama: 
-1. Diagrama de bases de datos no relacionales: [Diagrama](images/nosql.png)
+1. Diagrama de bases de datos no relacionales: ![Diagrama](images/nosql.png)
 
 - Ventaja: Todo queda compacto en las consultas principales. Al embeber la reserva con el turno y los servicios, podemos obtener toda la información necesaria en una única operación de lectura rápida.
 - Desventaja: Al manejar referencias entre colecciones separadas (como barberos y turnos/reservas) se requieren múltiples consultas si se quiere traer información cruzada, y en los datos que se copian o embeben puede existir algo de duplicación de información si luego toca actualizarlos.
@@ -32,7 +43,7 @@
 ---
 
 ## Punto 4
-### Asignación del Equipo de Seguridad - Proteger el acceso y la información
+### Asignación del Equipo de Seguridad
 
 a. 
   - Autenticación: Sirve para logins autenticación de usuarios en general, se utiliza al hacer un POST en login y es donde se utiliza el token generado al hacer la autenticación arriba para el id, uno JWT. 
@@ -48,7 +59,7 @@ c. Para la autenticación el más adecuado para garantizar seguridad es el de JW
 ---
 
 ## Punto 5
-### Asignación del Equipo de Calidad - Definir cómo comprobar el comportamiento.
+### Asignación del Equipo de Calidad
 
 - Cada vez que se crea un nuevo objeto se debe crear un test que primero falle por falta de implementación (RED), se implemente el código mínimo con el funcionamiento básico para que pase (GREEN), y por último se refactorice el código sin cambiar su comportamiento así verificando que las pruebas sigan pasando (REFACTOR).
 - En Pedir un Turno se tienen varios escenarios, reserva exitosa CONFIRMADA (donde el turno pasa a OCUPADO), sin barbero elegido (donde se le asigna uno por especialidad) y un rechazo por cada error.
@@ -63,7 +74,7 @@ b. No, no van a mostrar directamente por si solas la ausencia de errores, lo ún
 
 ## Punto 6
 ### Asignación del Equipo de Devops 
-
+### Diagrama:
 ![Diagrama](images/Deploy.png)
 
 - a. Las etapas principales del pipeline CI/CD son:

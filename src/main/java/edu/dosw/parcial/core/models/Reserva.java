@@ -43,10 +43,7 @@ public class Reserva {
             this.precio = 0.0;
             return 0.0;
         }
-        this.total = servicios.stream()
-                .filter(s -> s.getPrecio() != null)
-                .mapToDouble(Servicio::getPrecio)
-                .sum();
+        this.total = servicios.stream().filter(s -> s.getPrecio() != null).mapToDouble(Servicio::getPrecio).sum();
         this.precio = this.total;
         return this.total;
     }

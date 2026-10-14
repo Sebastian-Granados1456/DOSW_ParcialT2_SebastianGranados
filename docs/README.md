@@ -30,7 +30,13 @@ c. Para la autenticación el más adecuado para garantizar seguridad es el de JW
 ## Punto 5
 ### Asignación del Equipo de Calidad - Definir cómo comprobar el comportamiento.
 
-- Cada vez que se crea un nuevo objeto como clase con atributos, se debe crear un test por método que primero falle (RED), se implemente directamente el funcionamiento básico (GREEN), y por último se refactorice para funcionar en casos generales (REFACTOR). En este caso si un Cliente pide un turno es necesario verificar que genere un id, que pueda cambiar el estado a realizado
+- Cada vez que se crea un nuevo objeto se debe crear un test que primero falle por falta de implementación (RED), se implemente el código mínimo con el funcionamiento básico para que pase (GREEN), y por último se refactorice el código sin cambiar su comportamiento así verificando que las pruebas sigan pasando (REFACTOR).
+- En Pedir un Turno se tienen varios escenarios, reserva exitosa CONFIRMADA (donde el turno pasa a OCUPADO), sin barbero elegido (donde se le asigna uno por especialidad) y un rechazo por cada error.
+- Se comprueba el orden de la siguiente forma, se crean pruebas que fallen en dos validaciones a la vez, por ejemplo, franja llena y nombre vacío, en el cual responde con un rechazo de error E01 y no E03 por ejemplo.
+- La forma de comprobar que una falla no deja cambios es revisar que no se guarda la reserva y el turno se mantiene DISPONIBLE.
 
+a. Se puede hacer que cada prueba sea una regla del caso, ahí directamente se agrega la caracteristica de que si pasa despues de implementar Refactor es porque esa regla efectivamente se cumple. Con pruebas que son unitarias, hay que verificar cada validador por separado, en general la lógica de servicio, el cálculo del servicio total y la asignación final del barbero.
+
+b. No, no van a mostrar directamente por si solas la ausencia de errores, lo único que garantizan es que no haya errores en los casos específicos que se prueban, también puede pasar que haya casos que no pensamos como pruebas. Claramente ayuda a que los implementados como pruebas tengan menos errores al recorrer todo el esquema TDD, pero estos no garantizan a la final que los errores no existan en otras partes. 
 ## Punto 6
 ### Por realizar

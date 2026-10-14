@@ -14,8 +14,8 @@
     3. No se duplica barbero + fecha + hora: También se ejecuta en el Service junto con el Validator antes de mandar al Mapper OUT, porque debe preguntarle al Repository si ya existe ese turno en la BD. Si ya existe, detiene el proceso y arroja error.
 
 ## Punto 3
-- Ventaja: Todo esta compacto y respeta las responsabilidades
-- Desventaja: Es posible acceder a información importante por medio de otras clases.
+- Ventaja: Todo queda compacto en las consultas principales. Al embeber la reserva con el turno y los servicios, podemos obtener toda la información necesaria en una única operación de lectura rápida.
+- Desventaja: Al manejar referencias entre colecciones separadas (como barberos y turnos/reservas) se requieren múltiples consultas si se quiere traer información cruzada, y en los datos que se copian o embeben puede existir algo de duplicación de información si luego toca actualizarlos.
 
 ## Punto 4
 ### Asignación del Equipo de Seguridad - Proteger el acceso y la información

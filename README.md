@@ -1,5 +1,12 @@
 # DOSW_ParcialT2_SebastianGranados
 
+## Realización Parcial
+### Parte I - Teorica
+- El README correspondiente con todas las respuestas: [Readme Teorico](docs/README.md)
+
+
+---
+
 ## Índice
 1. [Datos del estudiante](#1-datos-del-estudiante)
 2. [Descripción del proyecto](#2-descripción-del-proyecto)

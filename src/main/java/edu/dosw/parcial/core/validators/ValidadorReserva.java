@@ -11,4 +11,10 @@ public abstract class ValidadorReserva {
     }
 
     public abstract void validar(Reserva reserva);
+
+    protected void ejecutarSiguiente(Reserva reserva) {
+        if (siguiente != null) {
+            siguiente.validar(reserva);
+        }
+    }
 }

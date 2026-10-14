@@ -8,9 +8,12 @@ import org.springframework.stereotype.Component;
 public class TurnoEntityMapper {
 
     public Turno toDomain(TurnoDocument doc) {
-        if (doc == null) return null;
+        if (doc == null) {
+            return null;
+        }
         return Turno.builder()
                 .idTurno(doc.getIdTurno())
+                .barberoNombre(doc.getBarberoNombre())
                 .fecha(doc.getFecha())
                 .hora(doc.getHora())
                 .estado(doc.getEstado())
@@ -18,9 +21,12 @@ public class TurnoEntityMapper {
     }
 
     public TurnoDocument toDocument(Turno domain) {
-        if (domain == null) return null;
+        if (domain == null) {
+            return null;
+        }
         return TurnoDocument.builder()
                 .idTurno(domain.getIdTurno())
+                .barberoNombre(domain.getBarberoNombre())
                 .fecha(domain.getFecha())
                 .hora(domain.getHora())
                 .estado(domain.getEstado())

@@ -38,7 +38,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (servicioRepository.count() == 0) {
-            log.info("Inicializando servicios oficiales...");
+            log.info("Inicializando servicios");
             List<ServicioDocument> servicios = List.of(
                     ServicioDocument.builder().codigo("SER-001").servicio(TipoServicio.CORTE_CLASICO).precio(25000.0).especialidad(Especialidad.CORTE).build(),
                     ServicioDocument.builder().codigo("SER-002").servicio(TipoServicio.CORTE_BARBA).precio(38000.0).especialidad(Especialidad.CORTE_CON_BARBA).build(),
@@ -52,7 +52,7 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (barberoRepository.count() == 0) {
-            log.info("Inicializando barberos oficiales...");
+            log.info("Inicializando barberos");
             List<BarberoDocument> barberos = List.of(
                     BarberoDocument.builder().nombre("Miguel").especialidades(List.of(Especialidad.CORTE, Especialidad.CORTE_CON_BARBA)).diasDisponible("Lunes a Jueves").horario("10:00 AM - 5:00 PM").build(),
                     BarberoDocument.builder().nombre("Laura").especialidades(List.of(Especialidad.CAPILAR, Especialidad.CEJAS)).diasDisponible("Lunes a Viernes").horario("10:00 AM - 5:00 PM").build(),
@@ -64,7 +64,7 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (usuarioRepository.count() == 0) {
-            log.info("Inicializando usuarios semilla...");
+            log.info("Inicializando usuarios principales");
             List<UsuarioDocument> usuarios = List.of(
                     UsuarioDocument.builder().nombre("Administrador").correo("admin@bobsbarber.com").password(passwordEncoder.encode("admin123")).rol(Rol.ROLE_ADMIN).build(),
                     UsuarioDocument.builder().nombre("Cliente 1").correo("cliente1@gmail.com").password(passwordEncoder.encode("cliente123")).rol(Rol.ROLE_CLIENTE).build()

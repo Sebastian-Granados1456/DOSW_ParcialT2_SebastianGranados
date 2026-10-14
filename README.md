@@ -25,7 +25,7 @@
 - **Grupo:** 1
 - **Profesor agregado al repositorio:** ✔
 
-![Profesor como colaborador](docs/images/colaborador.png)
+![Profesor como colaborador](docs/images/otros/colaborador.png)
 
 ## 2. Descripción del proyecto
 Servicio REST base del parcial práctico del segundo tercio de DOSW. Está construido con Spring Boot siguiendo una arquitectura MVC por capas (controller, core, persistence) y usa MongoDB como base de datos. Por ahora expone un endpoint de salud y la documentación Swagger; la lógica del parcial se implementa en el laboratorio.
@@ -37,8 +37,8 @@ Servicio REST base del parcial práctico del segundo tercio de DOSW. Está const
 | Health | `https://dosw-parcial-sebastiangranados-fqded5cvd9awgab7.northcentralus-01.azurewebsites.net/api/v1/health` |
 | Swagger | `https://dosw-parcial-sebastiangranados-fqded5cvd9awgab7.northcentralus-01.azurewebsites.net/swagger-ui/index.html` |
 
-![Health en Azure](docs/images/azure-health.png)
-![Swagger en Azure](docs/images/azure-swagger.png)
+![Health en Azure](docs/images/otros/azure-health.png)
+![Swagger en Azure](docs/images/otros/azure-swagger.png)
 
 ## 4. Estructura del proyecto
 ```
@@ -113,13 +113,13 @@ mvn test
 ```
 El reporte de cobertura queda en `target/site/jacoco/index.html`.
 
-![Pruebas en verde](docs/images/pruebas.png)
-![Reporte Jacoco](docs/images/jacoco.png)
+![Pruebas en verde](docs/images/otros/pruebas.png)
+![Reporte Jacoco](docs/images/otros/jacoco.png)
 
 ## 9. Docker
 La imagen es multietapa: compila con Maven y luego corre el jar sobre `eclipse-temurin:21-jre-alpine`. Los comandos están en la [sección 7](#7-cómo-ejecutar).
 
-![Contenedor corriendo](docs/images/docker.png)
+![Contenedor corriendo](docs/images/otros/docker.png)
 
 ## 10. CI/CD
 El pipeline `.github/workflows/ci-cd.yml` se ejecuta con cada push a `main` y `develop`:
@@ -129,13 +129,13 @@ El pipeline `.github/workflows/ci-cd.yml` se ejecuta con cada push a `main` y `d
 
 Secrets usados: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `AZURE_CREDENTIALS`, `AZURE_WEBAPP_NAME`, `JWT_SECRET`.
 
-![Pipeline en verde](docs/images/pipeline.png)
+![Pipeline en verde](docs/images/otros/pipeline.png)
 
 ## 11. Herramientas de modelado y diseño (evidencias)
 **Miro**
 
-![Cuenta Miro](docs/images/modelado.png)
+![Cuenta Miro](docs/images/otros/modelado.png)
 
 **Figma**
 
-![Cuenta Figma](docs/images/figma.png)
+![Cuenta Figma](docs/images/otros/figma.png)

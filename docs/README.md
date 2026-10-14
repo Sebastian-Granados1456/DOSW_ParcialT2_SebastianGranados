@@ -6,6 +6,11 @@
 ---
 
 ## Punto 2
+### Diagramas:
+1. Componentes general: [Diagrama](images/CompGen.png)
+2. Componentes específico: [Diagrama](images/CompEspecifico.png)
+3. Diagrama de clases: [Diagrama](images/DiagramaClases.png)
+
 - a. El problema que aparece es que se genera acoplamiento, no se respetan las responsabilidades de las clases y pueden ocurrir errores de seguridad, ya que un controlador nunca debería saber qué es una BD ni manejar persistencia. Por ejemplo en reservas: el usuario interactúa con la API en el Controller, luego el Mapper IN recibe esa info y la pasa a modelo de dominio hacia el Service, ahí en Service se valida si todo está bien, y si es así pasa al Mapper OUT, que se entiende con el Repository para guardar dicha reserva en la BD.
 - b. Un validador verifica que se cumpla alguna regla de negocio o entrada, un ejemplo es ValidadorReserva con la regla de pasar las 4 validaciones en cadena. Una utilidad es una clase de apoyo sin estado que puede reutilizarse en varias partes, ejemplo una clase de horarios para validar formatos de fechas y horas de los turnos. El servicio contiene la lógica de negocio detrás del controlador, un ejemplo es el servicio de crear reserva o el de ver mis reservas.
 - c. El Mapper In es el encargado de trasnformar los datos que reciba el controller hacia el service. El mapper Out recibe de service los datos del dominio y los trasnforma para darselos a repository y luego ponerlos en la BD
@@ -18,6 +23,9 @@
 ---
 
 ## Punto 3
+### Diagrama: 
+1. Diagrama de bases de datos no relacionales: [Diagrama](images/nosql.png)
+
 - Ventaja: Todo queda compacto en las consultas principales. Al embeber la reserva con el turno y los servicios, podemos obtener toda la información necesaria en una única operación de lectura rápida.
 - Desventaja: Al manejar referencias entre colecciones separadas (como barberos y turnos/reservas) se requieren múltiples consultas si se quiere traer información cruzada, y en los datos que se copian o embeben puede existir algo de duplicación de información si luego toca actualizarlos.
 
@@ -55,6 +63,8 @@ b. No, no van a mostrar directamente por si solas la ausencia de errores, lo ún
 
 ## Punto 6
 ### Asignación del Equipo de Devops 
+
+![Diagrama](images/Deploy.png)
 
 - a. Las etapas principales del pipeline CI/CD son:
   1. test: Compila el código con Maven y corre las pruebas unitarias con JUnit, Mockito y JaCoCo. Su propósito es validar que la lógica y las reglas del negocio funcionen bien antes de seguir.

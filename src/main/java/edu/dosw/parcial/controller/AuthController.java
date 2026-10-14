@@ -1,0 +1,40 @@
+package edu.dosw.parcial.controller;
+
+import edu.dosw.parcial.controller.dtos.request.LoginRequestDTO;
+import edu.dosw.parcial.controller.dtos.response.TokenResponseDTO;
+import edu.dosw.parcial.core.services.security.JwtUtil;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/v1/auth")
+public class AuthController {
+
+    private final AuthenticationManager authManager;
+    private final JwtUtil jwtUtil;
+
+    public AuthController(AuthenticationManager authManager, JwtUtil jwtUtil) {
+        this.authManager = authManager;
+        this.jwtUtil = jwtUtil;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<TokenResponseDTO> login(@RequestBody LoginRequestDTO dto) {
+        Authentication auth = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.email(), dto.password()));
+        UserDetails user = (UserDetails) auth.getPrincipal();
+        String rol = user.getAuthorities().isEmpty()
+                ? "ROLE_CLIENTE"
+                : user.getAuthorities().iterator().next().getAuthority();
+        String token = jwtUtil.generateToken(user.getUsername(), rol);
+        return ResponseEntity.ok(new TokenResponseDTO(token));
+    }
+}

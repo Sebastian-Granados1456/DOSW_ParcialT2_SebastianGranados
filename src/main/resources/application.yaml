@@ -9,7 +9,7 @@ server:
   port: ${PORT:8080}
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET:TXkgc3VwZXIgc2VjcmV0IGtleSBwYXJhIGVsIHJlc3RhdXJhbnRl}
   expiration-ms: 3600000
 
 springdoc:

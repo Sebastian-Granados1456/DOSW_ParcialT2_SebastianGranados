@@ -69,7 +69,7 @@ public class ReservaServiceImpl implements ReservaService {
 
     @Override
     public Reserva pedirTurno(Reserva reserva) {
-        if (reserva.getTurnoAsociado() == null || reserva.getTurnoAsociado().getIdTurno() == null || reserva.getTurnoAsociado().getIdTurno().isBlank()) {
+        if (reserva == null || reserva.getTurnoAsociado() == null || reserva.getTurnoAsociado().getIdTurno() == null || reserva.getTurnoAsociado().getIdTurno().isBlank()) {
             throw new BusinessRuleException("E01", "Franja llena o turno no disponible");
         }
 
@@ -78,34 +78,13 @@ public class ReservaServiceImpl implements ReservaService {
         Turno turnoReal = turnoEntityMapper.toDomain(turnoDoc);
         reserva.setTurnoAsociado(turnoReal);
 
-        if (reserva.getFechaHora() == null && turnoReal.getFecha() != null && turnoReal.getHora() != null) {
+        if ((reserva.getBarberoNombre() == null || reserva.getBarberoNombre().isBlank())
+                && turnoReal != null && turnoReal.getBarberoNombre() != null && !turnoReal.getBarberoNombre().isBlank()) {
+            reserva.setBarberoNombre(turnoReal.getBarberoNombre());
+        }
+
+        if (reserva.getFechaHora() == null && turnoReal != null && turnoReal.getFecha() != null && turnoReal.getHora() != null) {
             reserva.setFechaHora(LocalDateTime.of(turnoReal.getFecha(), turnoReal.getHora()));
-        }
-
-        if (reserva.getServicios() == null || reserva.getServicios().isEmpty()) {
-            throw new BusinessRuleException("E09", "Servicio inexistente");
-        }
-
-        List<Servicio> serviciosReales = new ArrayList<>();
-        for (Servicio s : reserva.getServicios()) {
-            if (s.getCodigo() == null || s.getCodigo().isBlank()) {
-                throw new BusinessRuleException("E09", "Servicio inexistente");
-            }
-            ServicioDocument servDoc = servicioRepository.findByCodigo(s.getCodigo())
-                    .orElseThrow(() -> new BusinessRuleException("E09", "Servicio inexistente: " + s.getCodigo()));
-            serviciosReales.add(servicioEntityMapper.toDomain(servDoc));
-        }
-        reserva.setServicios(serviciosReales);
-
-        String barberoDeseado = reserva.getBarberoNombre() != null && !reserva.getBarberoNombre().isBlank()
-                ? reserva.getBarberoNombre()
-                : (turnoReal.getBarberoNombre() != null ? turnoReal.getBarberoNombre() : null);
-
-        if (barberoDeseado != null && !barberoDeseado.isBlank()) {
-            barberoRepository.findByNombre(barberoDeseado).ifPresent(b -> {
-                turnoReal.setBarberoNombre(b.getNombre());
-                reserva.setBarberoNombre(b.getNombre());
-            });
         }
 
         validadorFranjas.setSiguiente(validadorBarbero);
@@ -120,31 +99,47 @@ public class ReservaServiceImpl implements ReservaService {
             throw e;
         }
 
-        double total = serviciosReales.stream()
-                .filter(s -> s.getPrecio() != null)
-                .mapToDouble(Servicio::getPrecio)
-                .sum();
+        double total = 0.0;
+        if (reserva.getServicios() != null) {
+            total = reserva.getServicios().stream()
+                    .filter(s -> s.getPrecio() != null)
+                    .mapToDouble(Servicio::getPrecio)
+                    .sum();
+        }
         reserva.setTotal(total);
         reserva.setPrecio(total);
 
         turnoDoc.setEstado("OCUPADO");
+        if (reserva.getBarberoNombre() != null && !reserva.getBarberoNombre().isBlank()) {
+            turnoDoc.setBarberoNombre(reserva.getBarberoNombre());
+        }
         turnoRepository.save(turnoDoc);
-        turnoReal.setEstado("OCUPADO");
-
-        reserva.setEstado("CONFIRMADA");
-        if (reserva.getFechaHora() == null) {
-            reserva.setFechaHora(LocalDateTime.now());
+        if (turnoReal != null) {
+            turnoReal.setEstado("OCUPADO");
+            if (reserva.getBarberoNombre() != null && !reserva.getBarberoNombre().isBlank()) {
+                turnoReal.setBarberoNombre(reserva.getBarberoNombre());
+            }
         }
 
+        reserva.setEstado("CONFIRMADA");
+        reserva.setFechaHora(LocalDateTime.now());
+
         ReservaDocument doc = reservaEntityMapper.toDocument(reserva);
+        doc.setBarberoNombre(reserva.getBarberoNombre());
         ReservaDocument saved = reservaRepository.save(doc);
 
         reserva.setIdReserva(saved != null ? saved.getIdReserva() : null);
 
-        log.info("Reserva {} creada exitosamente para {}", reserva.getIdReserva(), reserva.getClienteCorreo());
+        log.info("Reserva {} confirmada para {}", reserva.getIdReserva(), reserva.getClienteCorreo());
 
         Reserva resultado = reservaEntityMapper.toDomain(saved);
         if (resultado != null) {
+            if (resultado.getBarberoNombre() == null) {
+                resultado.setBarberoNombre(reserva.getBarberoNombre());
+            }
+            if (resultado.getTurnoAsociado() != null && resultado.getTurnoAsociado().getBarberoNombre() == null) {
+                resultado.getTurnoAsociado().setBarberoNombre(reserva.getBarberoNombre());
+            }
             return resultado;
         }
         return reserva;

@@ -14,11 +14,15 @@ public class ReservaEntityMapper {
         }
         Turno turno = null;
         if (doc.getTurnoId() != null) {
-            turno = Turno.builder().idTurno(doc.getTurnoId()).build();
+            turno = Turno.builder()
+                    .idTurno(doc.getTurnoId())
+                    .barberoNombre(doc.getBarberoNombre())
+                    .build();
         }
         return Reserva.builder()
                 .idReserva(doc.getIdReserva())
                 .turnoAsociado(turno)
+                .barberoNombre(doc.getBarberoNombre())
                 .clienteNombre(doc.getClienteNombre())
                 .clienteTlf(doc.getClienteTlf())
                 .clienteCorreo(doc.getClienteCorreo())
@@ -35,9 +39,14 @@ public class ReservaEntityMapper {
             return null;
         }
         String turnoId = domain.getTurnoAsociado() != null ? domain.getTurnoAsociado().getIdTurno() : null;
+        String barberoNombre = domain.getBarberoNombre();
+        if (barberoNombre == null && domain.getTurnoAsociado() != null) {
+            barberoNombre = domain.getTurnoAsociado().getBarberoNombre();
+        }
         return ReservaDocument.builder()
                 .idReserva(domain.getIdReserva())
                 .turnoId(turnoId)
+                .barberoNombre(barberoNombre)
                 .clienteNombre(domain.getClienteNombre())
                 .clienteTlf(domain.getClienteTlf())
                 .clienteCorreo(domain.getClienteCorreo())

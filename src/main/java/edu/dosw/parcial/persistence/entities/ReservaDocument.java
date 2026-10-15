@@ -17,6 +17,7 @@ public class ReservaDocument {
     @Id
     private String idReserva;
     private String turnoId;
+    private String barberoNombre;
     private String clienteNombre;
     private String clienteTlf;
     private String clienteCorreo;
@@ -29,9 +30,10 @@ public class ReservaDocument {
     public ReservaDocument() {
     }
 
-    public ReservaDocument(String idReserva, String turnoId, String clienteNombre, String clienteTlf, String clienteCorreo, Double total, Double precio, String estado, List<Servicio> servicios, LocalDateTime fechaHora) {
+    public ReservaDocument(String idReserva, String turnoId, String barberoNombre, String clienteNombre, String clienteTlf, String clienteCorreo, Double total, Double precio, String estado, List<Servicio> servicios, LocalDateTime fechaHora) {
         this.idReserva = idReserva;
         this.turnoId = turnoId;
+        this.barberoNombre = barberoNombre;
         this.clienteNombre = clienteNombre;
         this.clienteTlf = clienteTlf;
         this.clienteCorreo = clienteCorreo;

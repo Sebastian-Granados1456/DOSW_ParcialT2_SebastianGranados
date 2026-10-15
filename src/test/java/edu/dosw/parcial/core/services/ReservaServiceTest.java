@@ -74,9 +74,9 @@ class ReservaServiceTest {
         turnoEntityMapper = new TurnoEntityMapper();
         servicioEntityMapper = new ServicioEntityMapper();
         validadorFranjas = new ValidadorFranjas(reservaRepository);
-        validadorBarbero = new ValidadorBarbero(barberoRepository, turnoRepository);
+        validadorBarbero = new ValidadorBarbero(barberoRepository, turnoRepository, servicioRepository);
         validadorCliente = new ValidadorCliente();
-        validadorServicios = new ValidadorServicios();
+        validadorServicios = new ValidadorServicios(servicioRepository);
 
         reservaService = new ReservaServiceImpl(
                 reservaRepository,
@@ -94,7 +94,7 @@ class ReservaServiceTest {
     }
 
     @Test
-    void pedirTurno_datosValidos_reservaExitosa() {
+    void pedirTurno_conBarberoValido_reservaExitosa() {
         TurnoDocument turnoDoc = TurnoDocument.builder()
                 .idTurno("TUR-001")
                 .barberoNombre("Miguel")
@@ -106,6 +106,8 @@ class ReservaServiceTest {
         BarberoDocument barberoDoc = BarberoDocument.builder()
                 .nombre("Miguel")
                 .especialidades(List.of(Especialidad.CORTE))
+                .diasDisponible("Lunes a Jueves")
+                .horario("10:00 AM - 5:00 PM")
                 .build();
 
         ServicioDocument servDoc = ServicioDocument.builder()
@@ -132,6 +134,7 @@ class ReservaServiceTest {
         Reserva domainGuardado = Reserva.builder()
                 .idReserva("RES-001")
                 .estado("CONFIRMADA")
+                .barberoNombre("Miguel")
                 .total(25000.0)
                 .build();
 
@@ -147,6 +150,7 @@ class ReservaServiceTest {
 
         Reserva reserva = Reserva.builder()
                 .turnoAsociado(turnoInput)
+                .barberoNombre("Miguel")
                 .clienteNombre("Juan")
                 .clienteTlf("3001234567")
                 .clienteCorreo("juan@test.com")
@@ -158,8 +162,145 @@ class ReservaServiceTest {
         assertNotNull(resultado);
         assertEquals("CONFIRMADA", resultado.getEstado());
         assertEquals("OCUPADO", turnoDoc.getEstado());
+        assertEquals("Miguel", turnoDoc.getBarberoNombre());
         verify(turnoRepository, times(1)).save(any(TurnoDocument.class));
         verify(reservaRepository, times(1)).save(any(ReservaDocument.class));
+    }
+
+    @Test
+    void pedirTurno_datosValidos_reservaExitosa() {
+        pedirTurno_conBarberoValido_reservaExitosa();
+    }
+
+    @Test
+    void pedirTurno_sinPreferenciaBarbero_asignaBarberoAutomatico() {
+        LocalDate fecha = LocalDate.of(2026, 10, 19);
+        LocalTime hora = LocalTime.of(11, 0);
+
+        TurnoDocument turnoDoc = TurnoDocument.builder()
+                .idTurno("TUR-002")
+                .fecha(fecha)
+                .hora(hora)
+                .estado("DISPONIBLE")
+                .build();
+
+        BarberoDocument laura = BarberoDocument.builder()
+                .nombre("Laura")
+                .diasDisponible("Lunes a Viernes")
+                .horario("09:00 AM - 06:00 PM")
+                .especialidades(List.of(Especialidad.CORTE, Especialidad.BARBA))
+                .build();
+
+        ServicioDocument servDoc = ServicioDocument.builder()
+                .codigo("SER-001")
+                .precio(30000.0)
+                .especialidad(Especialidad.CORTE)
+                .build();
+
+        when(turnoRepository.findById("TUR-002")).thenReturn(Optional.of(turnoDoc));
+        when(servicioRepository.findByCodigo("SER-001")).thenReturn(Optional.of(servDoc));
+        when(reservaRepository.countByFechaHora(any())).thenReturn(0L);
+        when(barberoRepository.findAll()).thenReturn(List.of(laura));
+        when(turnoRepository.existsByBarberoNombreAndFechaAndHoraAndEstado("Laura", fecha, hora, "OCUPADO")).thenReturn(false);
+
+        ReservaDocument docGuardado = ReservaDocument.builder()
+                .idReserva("RES-002")
+                .turnoId("TUR-002")
+                .estado("CONFIRMADA")
+                .total(30000.0)
+                .build();
+
+        when(reservaEntityMapper.toDocument(any())).thenReturn(docGuardado);
+        when(reservaRepository.save(any())).thenReturn(docGuardado);
+
+        Reserva domainGuardado = Reserva.builder()
+                .idReserva("RES-002")
+                .estado("CONFIRMADA")
+                .barberoNombre("Laura")
+                .total(30000.0)
+                .build();
+
+        when(reservaEntityMapper.toDomain(docGuardado)).thenReturn(domainGuardado);
+
+        Turno turnoInput = Turno.builder()
+                .idTurno("TUR-002")
+                .build();
+
+        Servicio servInput = Servicio.builder()
+                .codigo("SER-001")
+                .build();
+
+        Reserva reserva = Reserva.builder()
+                .turnoAsociado(turnoInput)
+                .barberoNombre(null)
+                .clienteNombre("Ana")
+                .clienteTlf("3109876543")
+                .clienteCorreo("ana@test.com")
+                .servicios(List.of(servInput))
+                .build();
+
+        Reserva resultado = reservaService.pedirTurno(reserva);
+
+        assertNotNull(resultado);
+        assertEquals("CONFIRMADA", resultado.getEstado());
+        assertEquals("Laura", reserva.getBarberoNombre());
+        assertEquals("Laura", turnoDoc.getBarberoNombre());
+        assertEquals("OCUPADO", turnoDoc.getEstado());
+        verify(turnoRepository, times(1)).save(any(TurnoDocument.class));
+        verify(reservaRepository, times(1)).save(any(ReservaDocument.class));
+    }
+
+    @Test
+    void pedirTurno_sinPreferenciaBarbero_ningunoCumple_lanzaE100() {
+        LocalDate fecha = LocalDate.of(2026, 10, 19);
+        LocalTime hora = LocalTime.of(11, 0);
+
+        TurnoDocument turnoDoc = TurnoDocument.builder()
+                .idTurno("TUR-003")
+                .fecha(fecha)
+                .hora(hora)
+                .estado("DISPONIBLE")
+                .build();
+
+        BarberoDocument miguel = BarberoDocument.builder()
+                .nombre("Miguel")
+                .diasDisponible("Lunes a Jueves")
+                .horario("10:00 AM - 5:00 PM")
+                .especialidades(List.of(Especialidad.CORTE))
+                .build();
+
+        ServicioDocument servDoc = ServicioDocument.builder()
+                .codigo("SER-005")
+                .precio(45000.0)
+                .especialidad(Especialidad.CAPILAR)
+                .build();
+
+        when(turnoRepository.findById("TUR-003")).thenReturn(Optional.of(turnoDoc));
+        when(servicioRepository.findByCodigo("SER-005")).thenReturn(Optional.of(servDoc));
+        when(reservaRepository.countByFechaHora(any())).thenReturn(0L);
+        when(barberoRepository.findAll()).thenReturn(List.of(miguel));
+
+        Turno turnoInput = Turno.builder()
+                .idTurno("TUR-003")
+                .build();
+
+        Servicio servInput = Servicio.builder()
+                .codigo("SER-005")
+                .build();
+
+        Reserva reserva = Reserva.builder()
+                .turnoAsociado(turnoInput)
+                .barberoNombre(null)
+                .clienteNombre("Carlos")
+                .clienteTlf("3201234567")
+                .clienteCorreo("carlos@test.com")
+                .servicios(List.of(servInput))
+                .build();
+
+        BusinessRuleException ex = assertThrows(BusinessRuleException.class, () -> reservaService.pedirTurno(reserva));
+        assertEquals("E100", ex.getCode());
+        assertEquals("Barbero no disponible", ex.getMessage());
+        verify(reservaRepository, never()).save(any());
     }
 
     @Test
@@ -172,14 +313,7 @@ class ReservaServiceTest {
                 .estado("DISPONIBLE")
                 .build();
 
-        ServicioDocument servDoc = ServicioDocument.builder()
-                .codigo("SER-001")
-                .precio(25000.0)
-                .especialidad(Especialidad.CORTE)
-                .build();
-
         when(turnoRepository.findById("TUR-001")).thenReturn(Optional.of(turnoDoc));
-        when(servicioRepository.findByCodigo("SER-001")).thenReturn(Optional.of(servDoc));
         when(reservaRepository.countByFechaHora(any())).thenReturn(3L);
 
         Turno turno = Turno.builder()
@@ -193,6 +327,35 @@ class ReservaServiceTest {
         Reserva reserva = Reserva.builder()
                 .turnoAsociado(turno)
                 .servicios(List.of(serv))
+                .clienteNombre("Juan")
+                .clienteTlf("3001234567")
+                .clienteCorreo("juan@test.com")
+                .build();
+
+        BusinessRuleException ex = assertThrows(BusinessRuleException.class, () -> reservaService.pedirTurno(reserva));
+        assertEquals("E01", ex.getCode());
+        verify(reservaRepository, never()).save(any());
+    }
+
+    @Test
+    void pedirTurno_turnoNoDisponible_lanzaE01() {
+        TurnoDocument turnoDoc = TurnoDocument.builder()
+                .idTurno("TUR-001")
+                .barberoNombre("Miguel")
+                .fecha(LocalDate.of(2026, 10, 19))
+                .hora(LocalTime.of(11, 0))
+                .estado("OCUPADO")
+                .build();
+
+        when(turnoRepository.findById("TUR-001")).thenReturn(Optional.of(turnoDoc));
+
+        Turno turno = Turno.builder()
+                .idTurno("TUR-001")
+                .build();
+
+        Reserva reserva = Reserva.builder()
+                .turnoAsociado(turno)
+                .servicios(List.of(Servicio.builder().codigo("SER-001").build()))
                 .clienteNombre("Juan")
                 .clienteTlf("3001234567")
                 .clienteCorreo("juan@test.com")
@@ -249,6 +412,7 @@ class ReservaServiceTest {
 
         BusinessRuleException ex = assertThrows(BusinessRuleException.class, () -> reservaService.pedirTurno(reserva));
         assertEquals("E02", ex.getCode());
+        assertEquals("El barbero seleccionado no cuenta con la especialidad requerida", ex.getMessage());
         verify(reservaRepository, never()).save(any());
     }
 
@@ -311,7 +475,13 @@ class ReservaServiceTest {
                 .estado("DISPONIBLE")
                 .build();
 
+        BarberoDocument barberoDoc = BarberoDocument.builder()
+                .nombre("Miguel")
+                .especialidades(List.of(Especialidad.CORTE))
+                .build();
+
         when(turnoRepository.findById("TUR-001")).thenReturn(Optional.of(turnoDoc));
+        when(barberoRepository.findByNombre("Miguel")).thenReturn(Optional.of(barberoDoc));
         when(servicioRepository.findByCodigo("SER-INEXISTENTE")).thenReturn(Optional.empty());
 
         Turno turno = Turno.builder()

@@ -13,5 +13,7 @@ public interface TurnoRepository extends MongoRepository<TurnoDocument, String> 
 
     boolean existsByBarberoNombreAndFechaAndHora(String barberoNombre, LocalDate fecha, LocalTime hora);
 
+    boolean existsByBarberoNombreAndFechaAndHoraAndEstado(String barberoNombre, LocalDate fecha, LocalTime hora, String estado);
+
     List<TurnoDocument> findByFechaAndHora(LocalDate fecha, LocalTime hora);
 }

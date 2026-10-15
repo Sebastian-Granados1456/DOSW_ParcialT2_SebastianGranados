@@ -16,7 +16,10 @@ public class ReservaMapperOut {
         }
 
         String idTurno = domain.getTurnoAsociado() != null ? domain.getTurnoAsociado().getIdTurno() : null;
-        String barberoNombre = domain.getTurnoAsociado() != null ? domain.getTurnoAsociado().getBarberoNombre() : null;
+        String barberoFinal = domain.getBarberoNombre();
+        if (barberoFinal == null && domain.getTurnoAsociado() != null) {
+            barberoFinal = domain.getTurnoAsociado().getBarberoNombre();
+        }
         List<String> codigosServicios = domain.getServicios() != null
                 ? domain.getServicios().stream().map(Servicio::getCodigo).toList()
                 : List.of();
@@ -24,7 +27,7 @@ public class ReservaMapperOut {
         return new ReservaResponseDTO(
                 domain.getIdReserva(),
                 idTurno,
-                barberoNombre,
+                barberoFinal,
                 domain.getClienteNombre(),
                 domain.getClienteCorreo(),
                 codigosServicios,

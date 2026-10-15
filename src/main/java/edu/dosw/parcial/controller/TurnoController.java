@@ -6,6 +6,7 @@ import edu.dosw.parcial.controller.mappers.TurnoMapperIn;
 import edu.dosw.parcial.controller.mappers.TurnoMapperOut;
 import edu.dosw.parcial.core.models.Turno;
 import edu.dosw.parcial.core.services.TurnoService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,7 @@ public class TurnoController {
         this.turnoMapperOut = turnoMapperOut;
     }
 
+    @Operation(summary = "Crear turno", description = "Rol requerido: ADMIN")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TurnoResponseDTO> crearTurno(@Valid @RequestBody TurnoRequestDTO request) {

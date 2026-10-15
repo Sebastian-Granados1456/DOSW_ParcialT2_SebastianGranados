@@ -149,4 +149,20 @@ public class ReservaServiceImpl implements ReservaService {
         }
         return reserva;
     }
+
+    @Override
+    public List<Reserva> consultarMisReservas(String correo) {
+        log.info("Consultando reservas del cliente {}", correo);
+        return reservaRepository.findByClienteCorreoOrderByFechaHoraDesc(correo).stream()
+                .map(reservaEntityMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Reserva> consultarTodas() {
+        log.info("Consultando todas las reservas");
+        return reservaRepository.findAllByOrderByFechaHoraDesc().stream()
+                .map(reservaEntityMapper::toDomain)
+                .toList();
+    }
 }

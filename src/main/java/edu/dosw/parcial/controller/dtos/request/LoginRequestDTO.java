@@ -1,4 +1,5 @@
 package edu.dosw.parcial.controller.dtos.request;
+import jakarta.validation.constraints.NotBlank;
 
-public record LoginRequestDTO(String email, String password) {
+public record LoginRequestDTO(@NotBlank String correo, @NotBlank String password) {
 }

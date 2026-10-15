@@ -28,12 +28,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -333,5 +335,89 @@ class ReservaServiceTest {
         BusinessRuleException ex = assertThrows(BusinessRuleException.class, () -> reservaService.pedirTurno(reserva));
         assertEquals("E09", ex.getCode());
         verify(reservaRepository, never()).save(any());
+    }
+
+    @Test
+    void consultarMisReservas_clienteConReservas_retornaSoloLasSuyas() {
+        ReservaDocument reciente = ReservaDocument.builder()
+                .idReserva("RES-002")
+                .clienteCorreo("cliente1@gmail.com")
+                .fechaHora(LocalDateTime.of(2026, 12, 15, 16, 0))
+                .build();
+
+        ReservaDocument antigua = ReservaDocument.builder()
+                .idReserva("RES-001")
+                .clienteCorreo("cliente1@gmail.com")
+                .fechaHora(LocalDateTime.of(2026, 11, 11, 15, 0))
+                .build();
+
+        Reserva reservaReciente = Reserva.builder()
+                .idReserva("RES-002")
+                .build();
+
+        Reserva reservaAntigua = Reserva.builder()
+                .idReserva("RES-001")
+                .build();
+
+
+        when(reservaRepository.findByClienteCorreoOrderByFechaHoraDesc("cliente1@gmail.com")).thenReturn(List.of(reciente,
+                antigua));
+        when(reservaEntityMapper.toDomain(reciente)).thenReturn(reservaReciente);
+        when(reservaEntityMapper.toDomain(antigua)).thenReturn(reservaAntigua);
+
+        List<Reserva> resultado = reservaService.consultarMisReservas("cliente1@gmail.com");
+
+        assertEquals(2, resultado.size());
+        assertEquals("RES-002", resultado.get(0).getIdReserva());
+        verify(reservaRepository).findByClienteCorreoOrderByFechaHoraDesc("cliente1@gmail.com");
+    }
+
+    @Test
+    void consultarMisReservas_clienteSinReservas_retornaListaVacia() {
+        when(reservaRepository.findByClienteCorreoOrderByFechaHoraDesc("nuevo@gmail.com")).thenReturn(List.of());
+
+        List<Reserva> resultado = reservaService.consultarMisReservas("nuevo@gmail.com");
+
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    void consultarTodas_hayReservas_retornaTodas() {
+        ReservaDocument doc1 = ReservaDocument.builder()
+                .idReserva("RES-002")
+                .clienteCorreo("ernesto@gmail.com")
+                .build();
+
+        ReservaDocument doc2 = ReservaDocument.builder()
+                .idReserva("RES-001")
+                .clienteCorreo("juan@gmail.com")
+                .build();
+
+        Reserva reserva1 = Reserva.builder()
+                .idReserva("RES-002")
+                .build();
+
+        Reserva reserva2 = Reserva.builder()
+                .idReserva("RES-001")
+                .build();
+
+        when(reservaRepository.findAllByOrderByFechaHoraDesc()).thenReturn(List.of(doc1, doc2));
+        when(reservaEntityMapper.toDomain(doc1)).thenReturn(reserva1);
+        when(reservaEntityMapper.toDomain(doc2)).thenReturn(reserva2);
+
+        List<Reserva> resultado = reservaService.consultarTodas();
+
+        assertEquals(2, resultado.size());
+        assertEquals("RES-001", resultado.get(1).getIdReserva());
+        verify(reservaRepository).findAllByOrderByFechaHoraDesc();
+    }
+
+    @Test
+    void consultarTodas_sinReservas_retornaListaVacia() {
+        when(reservaRepository.findAllByOrderByFechaHoraDesc()).thenReturn(List.of());
+
+        List<Reserva> resultado = reservaService.consultarTodas();
+
+        assertTrue(resultado.isEmpty());
     }
 }

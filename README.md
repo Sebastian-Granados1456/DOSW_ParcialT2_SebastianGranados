@@ -20,6 +20,7 @@
 9. [Docker](#9-docker)
 10. [CI/CD](#10-cicd)
 11. [Herramientas de modelado y diseño (evidencias)](#11-herramientas-de-modelado-y-diseño-evidencias)
+12. [Implementación y evidencias](#12-implementación-y-evidencias)
 
 ## 1. Datos del estudiante
 - **Nombre:** Sebastián Camilo Granados López
@@ -140,3 +141,75 @@ Secrets usados: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `AZURE_CREDENTIALS`, `A
 **Figma**
 
 ![Cuenta Figma](docs/images/otros/figma.png)
+
+## 12. Implementación y evidencias
+
+### 12.1 Casos de uso implementados
+| Caso de uso | Endpoint | Rol |
+  |---|---|---|
+| Crear turno | `POST /api/v1/turnos` | ADMIN |
+| Pedir un turno | `POST /api/v1/reservas` | CLIENTE |
+| Ver mis turnos realizados | `GET /api/v1/reservas/me` | CLIENTE |
+| Ver todos los turnos realizados | `GET /api/v1/reservas` | ADMIN |
+| Iniciar sesión | `POST /api/v1/auth/login` | Público |
+
+### 12.2 Ejecución
+- Variables de entorno: ver [sección 6](#6-configuración-y-variables-de-entorno) (`MONGODB_URI`, `JWT_SECRET`, `PORT`, `WEBSITES_PORT`).
+- Aplicación: ver [sección 7](#7-cómo-ejecutar).
+- Pruebas: ver [sección 8](#8-pruebas).
+- Usuarios de prueba creados al iniciar: un ADMIN y un CLIENTE predefinidos en la base de datos.
+
+### 12.3 Pruebas funcionales (Swagger)
+Swagger muestra en cada endpoint el rol requerido. El login es público y el resto requiere el token en **Authorize**.
+
+![Swagger general](docs/images/swagger-general.png)
+![Authorize](docs/images/swagger-authorize.png)
+
+**Iniciar sesión**
+
+![Login ADMIN](docs/images/swagger-login-admin.png)
+![Login CLIENTE](docs/images/swagger-login-cliente.png)
+
+**Crear turno (ADMIN) - 201**
+
+![Crear turno](docs/images/swagger-crear-turno.png)
+
+**Pedir un turno (CLIENTE) - 201**
+
+![Pedir turno](docs/images/swagger-pedir-turno.png)
+
+**Ver mis turnos realizados (CLIENTE) - 200**
+
+![Mis reservas](docs/images/swagger-mis-reservas.png)
+
+**Ver todos los turnos realizados (ADMIN) - 200**
+
+![Todas las reservas](docs/images/swagger-todas-reservas.png)
+
+**Control de acceso**
+- 403: un CLIENTE intenta ver todas las reservas.
+- 401: petición sin token.
+
+![403](docs/images/swagger-403.png)
+![401](docs/images/swagger-401.png)
+
+### 12.4 Logs
+Logs `INFO` de los flujos exitosos y `WARN` de los rechazos, generados durante las pruebas funcionales.
+
+![Logs](docs/images/logs.png)
+
+### 12.5 Pruebas unitarias y cobertura
+Pruebas con JUnit 5 y Mockito (estructura Arrange, Act, Assert). La cobertura excluye las clases sin lógica (`config`, `dtos`,
+`entities`, `models`, `main`).
+
+![Pruebas unitarias](docs/images/pruebas-unitarias.png)
+![JaCoCo](docs/images/jacoco-cobertura.png)
+
+### 12.6 Análisis estático
+  <!-- Captura de SonarQube / SonarCloud -->
+
+### 12.7 Pipeline y despliegue en Azure
+  <!-- Juan Munar: enlace a la ejecución exitosa del pipeline y evidencia en Azure -->
+
+### 12.8 Bono: docker-compose
+  <!-- Juan Munar -->

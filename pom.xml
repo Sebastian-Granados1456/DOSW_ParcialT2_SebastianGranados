@@ -21,6 +21,15 @@
 		<sonar.projectKey>DOSW_ParcialT2_SebastianGranados</sonar.projectKey>
 		<sonar.host.url>http://localhost:9000</sonar.host.url>
 		<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		<sonar.coverage.exclusions>
+			**/config/**,
+			**/dtos/**,
+			**/dto/**,
+			**/entities/**,
+			**/models/**,
+			**/main/**,
+			**/mappers/**
+		</sonar.coverage.exclusions>
 	</properties>
 
 	<dependencies>

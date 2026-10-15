@@ -10,6 +10,7 @@ import edu.dosw.parcial.persistence.repositories.BarberoRepository;
 import edu.dosw.parcial.persistence.repositories.ServicioRepository;
 import edu.dosw.parcial.persistence.repositories.UsuarioRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,12 @@ public class DataInitializer implements CommandLineRunner {
     private final BarberoRepository barberoRepository;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${app.seed.admin-password:admin123}")
+    private String adminSeedPassword;
+
+    @Value("${app.seed.cliente-password:cliente123}")
+    private String clienteSeedPassword;
 
     public DataInitializer(ServicioRepository servicioRepository,
                            BarberoRepository barberoRepository,
@@ -65,9 +72,11 @@ public class DataInitializer implements CommandLineRunner {
 
         if (usuarioRepository.count() == 0) {
             log.info("Inicializando usuarios principales");
+            String adminPass = (adminSeedPassword != null && !adminSeedPassword.isBlank()) ? adminSeedPassword : "admin123";
+            String clientePass = (clienteSeedPassword != null && !clienteSeedPassword.isBlank()) ? clienteSeedPassword : "cliente123";
             List<UsuarioDocument> usuarios = List.of(
-                    UsuarioDocument.builder().nombre("Administrador").correo("admin@bobsbarber.com").password(passwordEncoder.encode("admin123")).rol(Rol.ROLE_ADMIN).build(),
-                    UsuarioDocument.builder().nombre("Cliente 1").correo("cliente1@gmail.com").password(passwordEncoder.encode("cliente123")).rol(Rol.ROLE_CLIENTE).build()
+                    UsuarioDocument.builder().nombre("Administrador").correo("admin@bobsbarber.com").password(passwordEncoder.encode(adminPass)).rol(Rol.ROLE_ADMIN).build(),
+                    UsuarioDocument.builder().nombre("Cliente 1").correo("cliente1@gmail.com").password(passwordEncoder.encode(clientePass)).rol(Rol.ROLE_CLIENTE).build()
             );
             for (UsuarioDocument u : usuarios) {
                 usuarioRepository.save(u);

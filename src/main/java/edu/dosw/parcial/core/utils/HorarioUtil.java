@@ -29,7 +29,7 @@ public final class HorarioUtil {
             return dia.getValue() >= DayOfWeek.TUESDAY.getValue() && dia.getValue() <= DayOfWeek.SATURDAY.getValue();
         }
         if ((texto.contains("fin de semana") || texto.contains("fines de semana"))
-                && (dia == DayOfWeek.SATURDAY || dia == DayOfWeek.SUNDAY)) {
+                && (dia.equals(DayOfWeek.SATURDAY) || dia.equals(DayOfWeek.SUNDAY))) {
             return true;
         }
         return switch (dia) {

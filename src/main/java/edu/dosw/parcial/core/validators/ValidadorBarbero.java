@@ -46,11 +46,6 @@ public class ValidadorBarbero extends ValidadorReserva {
         List<Especialidad> especialidadesRequeridas = obtenerEspecialidadesRequeridas(reserva.getServicios());
 
         if (reserva.getBarberoNombre() == null || reserva.getBarberoNombre().isBlank()) {
-            // ASIGNACIÓN AUTOMÁTICA:
-            // 1. Obtener barberos de BarberoRepository.
-            // 2. Filtrar el que atienda en esa fecha/hora y posea TODAS las especialidades de los servicios solicitados.
-            // 3. Si encuentra un candidato, asignarlo a la reserva: reserva.setBarberoNombre(candidato.getNombre()).
-            // 4. Si ningún barbero cumple -> throw new BusinessRuleException("E100", "Barbero no disponible");
             LocalDate fecha = null;
             LocalTime hora = null;
             if (reserva.getFechaHora() != null) {
@@ -86,9 +81,6 @@ public class ValidadorBarbero extends ValidadorReserva {
                 turno.setBarberoNombre(candidato.getNombre());
             }
         } else {
-            // VALIDACIÓN DE BARBERO PREFERIDO:
-            // 1. Buscar al barbero por nombre.
-            // 2. Si no existe o no tiene las especialidades -> throw new BusinessRuleException("E02", "El barbero seleccionado no cuenta con la especialidad requerida");
             String barberoNombre = reserva.getBarberoNombre().trim();
             BarberoDocument barbero = barberoRepository.findByNombre(barberoNombre).orElse(null);
             if (barbero == null || !cumpleEspecialidades(barbero, especialidadesRequeridas)) {
@@ -107,11 +99,8 @@ public class ValidadorBarbero extends ValidadorReserva {
         if (turnoRepository == null || barberoNombre == null) {
             return false;
         }
-        try {
-            if (turnoRepository.existsByBarberoNombreAndFechaAndHoraAndEstado(barberoNombre, fecha, hora, "OCUPADO")) {
-                return true;
-            }
-        } catch (Exception ignored) {
+        if (turnoRepository.existsByBarberoNombreAndFechaAndHoraAndEstado(barberoNombre, fecha, hora, "OCUPADO")) {
+            return true;
         }
         List<TurnoDocument> turnos = turnoRepository.findByFechaAndHora(fecha, hora);
         if (turnos != null) {

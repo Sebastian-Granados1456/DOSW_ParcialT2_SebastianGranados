@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bobs-barber-api
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATA_MONGODB_URI=${SPRING_DATA_MONGODB_URI}
+      - MONGODB_URI=${SPRING_DATA_MONGODB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION_MS=${JWT_EXPIRATION_MS}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - bobs-net
+
+  mongo:
+    image: mongo:7
+    container_name: bobs-barber-mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+    ports:
+      - "27017:27017"
+    volumes:
+      - bobs-mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - bobs-net
+
+volumes:
+  bobs-mongo-data:
+    name: bobs_mongo_data
+
+networks:
+  bobs-net:
+    name: bobs_barber_net
+    driver: bridge

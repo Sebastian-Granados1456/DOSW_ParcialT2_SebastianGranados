@@ -9,21 +9,16 @@ import edu.dosw.parcial.core.validators.ValidadorCliente;
 import edu.dosw.parcial.core.validators.ValidadorFranjas;
 import edu.dosw.parcial.core.validators.ValidadorServicios;
 import edu.dosw.parcial.persistence.entities.ReservaDocument;
-import edu.dosw.parcial.persistence.entities.ServicioDocument;
 import edu.dosw.parcial.persistence.entities.TurnoDocument;
 import edu.dosw.parcial.persistence.mappers.ReservaEntityMapper;
-import edu.dosw.parcial.persistence.mappers.ServicioEntityMapper;
 import edu.dosw.parcial.persistence.mappers.TurnoEntityMapper;
-import edu.dosw.parcial.persistence.repositories.BarberoRepository;
 import edu.dosw.parcial.persistence.repositories.ReservaRepository;
-import edu.dosw.parcial.persistence.repositories.ServicioRepository;
 import edu.dosw.parcial.persistence.repositories.TurnoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,11 +28,8 @@ public class ReservaServiceImpl implements ReservaService {
 
     private final ReservaRepository reservaRepository;
     private final TurnoRepository turnoRepository;
-    private final ServicioRepository servicioRepository;
-    private final BarberoRepository barberoRepository;
     private final ReservaEntityMapper reservaEntityMapper;
     private final TurnoEntityMapper turnoEntityMapper;
-    private final ServicioEntityMapper servicioEntityMapper;
     private final ValidadorFranjas validadorFranjas;
     private final ValidadorBarbero validadorBarbero;
     private final ValidadorCliente validadorCliente;
@@ -45,22 +37,16 @@ public class ReservaServiceImpl implements ReservaService {
 
     public ReservaServiceImpl(ReservaRepository reservaRepository,
                               TurnoRepository turnoRepository,
-                              ServicioRepository servicioRepository,
-                              BarberoRepository barberoRepository,
                               ReservaEntityMapper reservaEntityMapper,
                               TurnoEntityMapper turnoEntityMapper,
-                              ServicioEntityMapper servicioEntityMapper,
                               ValidadorFranjas validadorFranjas,
                               ValidadorBarbero validadorBarbero,
                               ValidadorCliente validadorCliente,
                               ValidadorServicios validadorServicios) {
         this.reservaRepository = reservaRepository;
         this.turnoRepository = turnoRepository;
-        this.servicioRepository = servicioRepository;
-        this.barberoRepository = barberoRepository;
         this.reservaEntityMapper = reservaEntityMapper;
         this.turnoEntityMapper = turnoEntityMapper;
-        this.servicioEntityMapper = servicioEntityMapper;
         this.validadorFranjas = validadorFranjas;
         this.validadorBarbero = validadorBarbero;
         this.validadorCliente = validadorCliente;

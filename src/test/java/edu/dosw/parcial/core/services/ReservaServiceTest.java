@@ -14,7 +14,6 @@ import edu.dosw.parcial.persistence.entities.ReservaDocument;
 import edu.dosw.parcial.persistence.entities.ServicioDocument;
 import edu.dosw.parcial.persistence.entities.TurnoDocument;
 import edu.dosw.parcial.persistence.mappers.ReservaEntityMapper;
-import edu.dosw.parcial.persistence.mappers.ServicioEntityMapper;
 import edu.dosw.parcial.persistence.mappers.TurnoEntityMapper;
 import edu.dosw.parcial.persistence.repositories.BarberoRepository;
 import edu.dosw.parcial.persistence.repositories.ReservaRepository;
@@ -61,7 +60,6 @@ class ReservaServiceTest {
     private ReservaEntityMapper reservaEntityMapper;
 
     private TurnoEntityMapper turnoEntityMapper;
-    private ServicioEntityMapper servicioEntityMapper;
     private ValidadorFranjas validadorFranjas;
     private ValidadorBarbero validadorBarbero;
     private ValidadorCliente validadorCliente;
@@ -72,7 +70,6 @@ class ReservaServiceTest {
     @BeforeEach
     void setUp() {
         turnoEntityMapper = new TurnoEntityMapper();
-        servicioEntityMapper = new ServicioEntityMapper();
         validadorFranjas = new ValidadorFranjas(reservaRepository);
         validadorBarbero = new ValidadorBarbero(barberoRepository, turnoRepository, servicioRepository);
         validadorCliente = new ValidadorCliente();
@@ -81,11 +78,8 @@ class ReservaServiceTest {
         reservaService = new ReservaServiceImpl(
                 reservaRepository,
                 turnoRepository,
-                servicioRepository,
-                barberoRepository,
                 reservaEntityMapper,
                 turnoEntityMapper,
-                servicioEntityMapper,
                 validadorFranjas,
                 validadorBarbero,
                 validadorCliente,

@@ -87,6 +87,17 @@ class ReservaMapperInTest {
     }
 
     @Test
+    void toDomain_barberoNombreNulo_asignaNullSinError() {
+        ReservaRequestDTO dto = new ReservaRequestDTO("TUR-001", LocalDate.of(2026, 11, 12), LocalTime.of(11, 0), null,
+                "Ana", "3001234567", "ana@gmail.com", List.of());
+
+        Reserva reserva = reservaMapperIn.toDomain(dto);
+
+        org.junit.jupiter.api.Assertions.assertNotNull(reserva);
+        assertNull(reserva.getBarberoNombre());
+    }
+
+    @Test
     void toDomain_requestNulo_retornaNull() {
         Reserva reserva = reservaMapperIn.toDomain(null);
 

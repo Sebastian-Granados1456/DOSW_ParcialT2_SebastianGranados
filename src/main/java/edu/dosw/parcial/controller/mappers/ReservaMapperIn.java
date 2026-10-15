@@ -71,13 +71,14 @@ public class ReservaMapperIn {
             }
         }
 
-        return Reserva.builder()
+        Reserva reserva = Reserva.builder()
                 .turnoAsociado(turno)
-                .barberoNombre(dto.barberoNombre())
                 .clienteNombre(dto.clienteNombre())
                 .clienteTlf(dto.clienteTlf())
                 .clienteCorreo(dto.clienteCorreo())
                 .servicios(servicios)
                 .build();
+        reserva.setBarberoNombre(dto.barberoNombre());
+        return reserva;
     }
 }

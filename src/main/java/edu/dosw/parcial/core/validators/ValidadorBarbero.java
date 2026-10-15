@@ -5,12 +5,17 @@ import edu.dosw.parcial.core.models.Reserva;
 import edu.dosw.parcial.core.models.Servicio;
 import edu.dosw.parcial.core.models.Turno;
 import edu.dosw.parcial.core.models.enums.Especialidad;
+import edu.dosw.parcial.core.utils.HorarioUtil;
 import edu.dosw.parcial.persistence.entities.BarberoDocument;
 import edu.dosw.parcial.persistence.entities.TurnoDocument;
 import edu.dosw.parcial.persistence.repositories.BarberoRepository;
+import edu.dosw.parcial.persistence.repositories.ServicioRepository;
 import edu.dosw.parcial.persistence.repositories.TurnoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,65 +24,102 @@ public class ValidadorBarbero extends ValidadorReserva {
 
     private final BarberoRepository barberoRepository;
     private final TurnoRepository turnoRepository;
+    private final ServicioRepository servicioRepository;
 
     public ValidadorBarbero(BarberoRepository barberoRepository,
                             TurnoRepository turnoRepository) {
+        this(barberoRepository, turnoRepository, null);
+    }
+
+    @Autowired
+    public ValidadorBarbero(BarberoRepository barberoRepository,
+                            TurnoRepository turnoRepository,
+                            @Autowired(required = false) ServicioRepository servicioRepository) {
         this.barberoRepository = barberoRepository;
         this.turnoRepository = turnoRepository;
+        this.servicioRepository = servicioRepository;
     }
 
     @Override
     public void validar(Reserva reserva) {
         Turno turno = reserva.getTurnoAsociado();
-        String barberoNombre = reserva.getBarberoNombre() != null && !reserva.getBarberoNombre().isBlank()
-                ? reserva.getBarberoNombre()
-                : (turno != null ? turno.getBarberoNombre() : null);
-
         List<Especialidad> especialidadesRequeridas = obtenerEspecialidadesRequeridas(reserva.getServicios());
 
-        if (barberoNombre != null && !barberoNombre.isBlank()) {
+        if (reserva.getBarberoNombre() == null || reserva.getBarberoNombre().isBlank()) {
+            // ASIGNACIÓN AUTOMÁTICA:
+            // 1. Obtener barberos de BarberoRepository.
+            // 2. Filtrar el que atienda en esa fecha/hora y posea TODAS las especialidades de los servicios solicitados.
+            // 3. Si encuentra un candidato, asignarlo a la reserva: reserva.setBarberoNombre(candidato.getNombre()).
+            // 4. Si ningún barbero cumple -> throw new BusinessRuleException("E100", "Barbero no disponible");
+            LocalDate fecha = null;
+            LocalTime hora = null;
+            if (reserva.getFechaHora() != null) {
+                fecha = reserva.getFechaHora().toLocalDate();
+                hora = reserva.getFechaHora().toLocalTime();
+            } else if (turno != null) {
+                fecha = turno.getFecha();
+                hora = turno.getHora();
+            }
+
+            if (fecha == null || hora == null) {
+                throw new BusinessRuleException("E100", "Barbero no disponible");
+            }
+
+            final LocalDate fechaFinal = fecha;
+            final LocalTime horaFinal = hora;
+
+            List<BarberoDocument> todosLosBarberos = barberoRepository.findAll();
+            BarberoDocument candidato = todosLosBarberos.stream()
+                    .filter(b -> HorarioUtil.esDiaDisponible(fechaFinal.getDayOfWeek(), b.getDiasDisponible()))
+                    .filter(b -> HorarioUtil.esHoraDisponible(horaFinal, b.getHorario()))
+                    .filter(b -> cumpleEspecialidades(b, especialidadesRequeridas))
+                    .filter(b -> !tieneTurnoOcupado(b.getNombre(), fechaFinal, horaFinal))
+                    .findFirst()
+                    .orElse(null);
+
+            if (candidato == null) {
+                throw new BusinessRuleException("E100", "Barbero no disponible");
+            }
+
+            reserva.setBarberoNombre(candidato.getNombre());
+            if (turno != null) {
+                turno.setBarberoNombre(candidato.getNombre());
+            }
+        } else {
+            // VALIDACIÓN DE BARBERO PREFERIDO:
+            // 1. Buscar al barbero por nombre.
+            // 2. Si no existe o no tiene las especialidades -> throw new BusinessRuleException("E02", "El barbero seleccionado no cuenta con la especialidad requerida");
+            String barberoNombre = reserva.getBarberoNombre().trim();
             BarberoDocument barbero = barberoRepository.findByNombre(barberoNombre).orElse(null);
             if (barbero == null || !cumpleEspecialidades(barbero, especialidadesRequeridas)) {
-                throw new BusinessRuleException("E02", "El barbero seleccionado no cuenta con la especialidad requerida para los servicios solicitados");
+                throw new BusinessRuleException("E02", "El barbero seleccionado no cuenta con la especialidad requerida");
             }
+            reserva.setBarberoNombre(barbero.getNombre());
             if (turno != null) {
                 turno.setBarberoNombre(barbero.getNombre());
             }
-            reserva.setBarberoNombre(barbero.getNombre());
-        } else {
-            if (turno == null || turno.getFecha() == null || turno.getHora() == null) {
-                throw new BusinessRuleException("E100", "Barbero no disponible");
-            }
-
-            List<TurnoDocument> turnosDisponibles = turnoRepository.findByFechaAndHora(turno.getFecha(), turno.getHora())
-                    .stream()
-                    .filter(t -> "DISPONIBLE".equalsIgnoreCase(t.getEstado()))
-                    .toList();
-
-            BarberoDocument barberoSeleccionado = null;
-            TurnoDocument turnoSeleccionado = null;
-
-            for (TurnoDocument tDoc : turnosDisponibles) {
-                if (tDoc.getBarberoNombre() != null) {
-                    BarberoDocument bDoc = barberoRepository.findByNombre(tDoc.getBarberoNombre()).orElse(null);
-                    if (bDoc != null && cumpleEspecialidades(bDoc, especialidadesRequeridas)) {
-                        barberoSeleccionado = bDoc;
-                        turnoSeleccionado = tDoc;
-                        break;
-                    }
-                }
-            }
-
-            if (barberoSeleccionado == null) {
-                throw new BusinessRuleException("E100", "Barbero no disponible");
-            }
-
-            turno.setIdTurno(turnoSeleccionado.getIdTurno());
-            turno.setBarberoNombre(barberoSeleccionado.getNombre());
-            reserva.setBarberoNombre(barberoSeleccionado.getNombre());
         }
 
         ejecutarSiguiente(reserva);
+    }
+
+    private boolean tieneTurnoOcupado(String barberoNombre, LocalDate fecha, LocalTime hora) {
+        if (turnoRepository == null || barberoNombre == null) {
+            return false;
+        }
+        try {
+            if (turnoRepository.existsByBarberoNombreAndFechaAndHoraAndEstado(barberoNombre, fecha, hora, "OCUPADO")) {
+                return true;
+            }
+        } catch (Exception ignored) {
+        }
+        List<TurnoDocument> turnos = turnoRepository.findByFechaAndHora(fecha, hora);
+        if (turnos != null) {
+            return turnos.stream()
+                    .anyMatch(t -> barberoNombre.equalsIgnoreCase(t.getBarberoNombre())
+                            && "OCUPADO".equalsIgnoreCase(t.getEstado()));
+        }
+        return false;
     }
 
     private List<Especialidad> obtenerEspecialidadesRequeridas(List<Servicio> servicios) {
@@ -86,8 +128,19 @@ public class ValidadorBarbero extends ValidadorReserva {
             return lista;
         }
         for (Servicio s : servicios) {
-            if (s.getEspecialidad() != null && !lista.contains(s.getEspecialidad())) {
-                lista.add(s.getEspecialidad());
+            if (s == null) {
+                continue;
+            }
+            if (s.getEspecialidad() != null) {
+                if (!lista.contains(s.getEspecialidad())) {
+                    lista.add(s.getEspecialidad());
+                }
+            } else if (s.getCodigo() != null && servicioRepository != null) {
+                servicioRepository.findByCodigo(s.getCodigo()).ifPresent(doc -> {
+                    if (doc.getEspecialidad() != null && !lista.contains(doc.getEspecialidad())) {
+                        lista.add(doc.getEspecialidad());
+                    }
+                });
             }
         }
         return lista;

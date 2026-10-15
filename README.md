@@ -162,54 +162,55 @@ Secrets usados: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `AZURE_CREDENTIALS`, `A
 ### 12.3 Pruebas funcionales (Swagger)
 Swagger muestra en cada endpoint el rol requerido. El login es público y el resto requiere el token en **Authorize**.
 
-![Swagger general](docs/images/swagger-general.png)
-![Authorize](docs/images/swagger-authorize.png)
+![Swagger general](docs/images/otros/swagger-general.png)
+![Authorize](docs/images/otros/swagger-authorize.png)
 
 **Iniciar sesión**
 
-![Login ADMIN](docs/images/swagger-login-admin.png)
-![Login CLIENTE](docs/images/swagger-login-cliente.png)
+![Login ADMIN](docs/images/otros/swagger-login-admin.png)
+![Login CLIENTE](docs/images/otros/swagger-login-cliente.png)
 
 **Crear turno (ADMIN) - 201**
 
-![Crear turno](docs/images/swagger-crear-turno.png)
+![Crear turno](docs/images/otros/swagger-crear-turno.png)
 
 **Pedir un turno (CLIENTE) - 201**
 
-![Pedir turno](docs/images/swagger-pedir-turno.png)
+![Pedir turno](docs/images/otros/swagger-pedir-turno.png)
 
 **Ver mis turnos realizados (CLIENTE) - 200**
 
-![Mis reservas](docs/images/swagger-mis-reservas.png)
+![Mis reservas](docs/images/otros/swagger-mis-reservas.png)
 
 **Ver todos los turnos realizados (ADMIN) - 200**
 
-![Todas las reservas](docs/images/swagger-todas-reservas.png)
+![Todas las reservas](docs/images/otros/swagger-todas-reservas.png)
 
 **Control de acceso**
 - 403: un CLIENTE intenta ver todas las reservas.
 - 401: petición sin token.
 
-![403](docs/images/swagger-403.png)
-![401](docs/images/swagger-401.png)
+![403](docs/images/otros/swagger-403.png)
+![401](docs/images/otros/swagger-401.png)
 
 ### 12.4 Logs
 Logs `INFO` de los flujos exitosos y `WARN` de los rechazos, generados durante las pruebas funcionales.
 
-![Logs](docs/images/logs.png)
+![Logs](docs/images/otros/logs.png)
 
 ### 12.5 Pruebas unitarias y cobertura
 Pruebas con JUnit 5 y Mockito (estructura Arrange, Act, Assert). La cobertura excluye las clases sin lógica (`config`, `dtos`,
 `entities`, `models`, `main`).
 
-![Pruebas unitarias](docs/images/pruebas-unitarias.png)
-![JaCoCo](docs/images/jacoco-cobertura.png)
+![Pruebas unitarias](docs/images/otros/pruebas-unitarias.png)
+![JaCoCo](docs/images/otros/jacoco-cobertura.png)
 
 ### 12.6 Análisis estático
-  <!-- Captura de SonarQube / SonarCloud -->
+![sonarqube](docs/images/otros/reporte-sonar.png)
 
 ### 12.7 Pipeline y despliegue en Azure
-  <!-- Juan Munar: enlace a la ejecución exitosa del pipeline y evidencia en Azure -->
-
+![Swagger en Azure](docs/images/otros/swagger-azure.png)
+- LINK: https://dosw-parcial-sebastiangranados-fqded5cvd9awgab7.northcentralus-01.azurewebsites.net/swagger-ui/index.html
+- LINK pipeline exitoso: https://github.com/Sebastian-Granados1456/DOSW_ParcialT2_SebastianGranados/actions/runs/38680319414
 ### 12.8 Bono: docker-compose
-  <!-- Juan Munar -->
+![Swagger corriendo en docker local](docs/images/otros/docker-bono.png)
